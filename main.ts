@@ -3,11 +3,14 @@
 // choosing the first step yourself, the small work done well, and what
 // we shall make possible tomorrow.
 // The program copies it to /output/entry.txt (or $MAKEFUN_OUTPUT_DIR).
-// Deterministic, no network: it writes the same bytes on every run.
+// Deterministic, no network: it writes the same bytes on every run, and
+// it refuses to run when the poem is missing instead of writing nothing.
 
-import { copyFileSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const source = new URL('./poem.txt', import.meta.url);
+if (!existsSync(source)) throw new Error('poem.txt is missing next to main.ts');
 mkdirSync(outDir, { recursive: true });
-copyFileSync(new URL('./poem.txt', import.meta.url), join(outDir, 'entry.txt'));
+copyFileSync(source, join(outDir, 'entry.txt'));
